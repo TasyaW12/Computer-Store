@@ -1,18 +1,4 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package com.example.cupcake.ui
 
 import androidx.compose.foundation.layout.Arrangement
@@ -30,21 +16,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.cupcake.R
+import androidx.compose.ui.unit.dp
 import com.example.cupcake.data.OrderUiState
-import com.example.cupcake.ui.components.FormattedPriceLabel
 import com.example.cupcake.ui.theme.CupcakeTheme
+import java.text.NumberFormat
+import java.util.Locale
 
-/**
- * This composable expects [orderUiState] that represents the order state, [onCancelButtonClicked]
- * lambda that triggers canceling the order and passes the final order to [onSendButtonClicked]
- * lambda
- */
 @Composable
 fun OrderSummaryScreen(
     orderUiState: OrderUiState,
@@ -52,81 +31,130 @@ fun OrderSummaryScreen(
     onSendButtonClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val resources = LocalContext.current.resources
 
-    val numberOfCupcakes = resources.getQuantityString(
-        R.plurals.cupcakes,
-        orderUiState.quantity,
-        orderUiState.quantity
+    val currencyFormat = NumberFormat.getCurrencyInstance(
+        Locale("id", "ID")
     )
-    //Load and format a string resource with the parameters.
-    val orderSummary = stringResource(
-        R.string.order_details,
-        numberOfCupcakes,
-        orderUiState.flavor,
-        orderUiState.date,
-        orderUiState.quantity
-    )
-    val newOrder = stringResource(R.string.new_cupcake_order)
-    //Create a list of order summary to display
+
     val items = listOf(
-        // Summary line 1: display selected quantity
-        Pair(stringResource(R.string.quantity), numberOfCupcakes),
-        // Summary line 2: display selected flavor
-        Pair(stringResource(R.string.flavor), orderUiState.flavor),
-        // Summary line 3: display selected pickup date
-        Pair(stringResource(R.string.pickup_date), orderUiState.date)
+        Pair("Processor", orderUiState.processor),
+        Pair("Memory", orderUiState.memory),
+        Pair("Storage", orderUiState.storage),
+        Pair("Monitor", orderUiState.monitor),
+        Pair("Graphics Card", orderUiState.graphicsCard)
     )
+
+    val totalPrice = currencyFormat.format(orderUiState.totalPrice)
+
+    val newOrder = "Computer Store - Order Summary"
+
+    val orderSummary = buildString {
+        appendLine("Computer Store Order")
+        appendLine()
+
+        items.forEach { item ->
+            appendLine("${item.first}: ${item.second.ifEmpty { "Belum dipilih" }}")
+        }
+
+        appendLine()
+        appendLine("Total Harga: $totalPrice")
+    }
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+
         Column(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items.forEach { item ->
-                Text(item.first.uppercase())
-                Text(text = item.second, fontWeight = FontWeight.Bold)
-                Divider(thickness = dimensionResource(R.dimen.thickness_divider))
-            }
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_small)))
-            FormattedPriceLabel(
-                subtotal = orderUiState.price,
-                modifier = Modifier.align(Alignment.End)
+
+            Text(
+                text = "Order Summary",
+                fontWeight = FontWeight.Bold
             )
-        }
-        Row(
-            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
+
+            Divider()
+
+            items.forEach { item ->
+
+                Text(
+                    text = item.first.uppercase(),
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = item.second.ifEmpty {
+                        "Belum dipilih"
+                    }
+                )
+
+                Divider()
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onSendButtonClicked(newOrder, orderSummary) }
-                ) {
-                    Text(stringResource(R.string.send))
+                Text(
+                    text = "TOTAL HARGA",
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = totalPrice,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onSendButtonClicked(newOrder, orderSummary)
                 }
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onCancelButtonClicked
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
+            ) {
+                Text("Send Order")
+            }
+
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onCancelButtonClicked
+            ) {
+                Text("Cancel Order")
             }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun OrderSummaryPreview() {
     CupcakeTheme {
         OrderSummaryScreen(
-            orderUiState = OrderUiState(0, "Test", "Test", "$300.00"),
-            onSendButtonClicked = { subject: String, summary: String -> },
+            orderUiState = OrderUiState(
+                processor = "Intel Core i5",
+                memory = "16 GB",
+                storage = "SSD 512 GB",
+                monitor = "24 Inch",
+                graphicsCard = "RTX 4060",
+                processorPrice = 3000000,
+                memoryPrice = 650000,
+                storagePrice = 750000,
+                monitorPrice = 1800000,
+                graphicsCardPrice = 5000000,
+                totalPrice = 11200000
+            ),
+            onSendButtonClicked = { _, _ -> },
             onCancelButtonClicked = {},
             modifier = Modifier.fillMaxHeight()
         )

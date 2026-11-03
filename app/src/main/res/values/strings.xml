@@ -29,7 +29,6 @@
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
     <string name="choose_pickup_date">Choose Pickup Date</string>
-    <string name="order_summary">Order Summary</string>
     <string name="send">Send Order to Another App</string>
     <string name="quantity">Quantity</string>
     <string name="flavor">Flavor</string>
@@ -38,6 +37,12 @@
     <string name="total_price">Total %s</string>
     <string name="new_cupcake_order">New Cupcake Order</string>
     <string name="order_details">Quantity: %1$s \nFlavor: %2$s \nPickup date: %3$s \nTotal: %4$s \n\nThank you!</string>
+    <string name="processor_selection">Choose Processor</string>
+    <string name="memory_selection">Choose Memory</string>
+    <string name="storage_selection">Choose Storage</string>
+    <string name="monitor_selection">Choose Monitor</string>
+    <string name="graphics_card_selection">Choose Graphics Card</string>
+    <string name="order_summary">Order Summary</string>
     <string name="back_button">Back</string>
     <plurals name="cupcakes">
         <item quantity="one">%d cupcake</item>
