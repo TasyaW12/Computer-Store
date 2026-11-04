@@ -20,6 +20,9 @@ import com.example.cupcake.ui.OrderSummaryScreen
 import com.example.cupcake.ui.OrderViewModel
 import com.example.cupcake.ui.SelectOptionScreen
 import com.example.cupcake.ui.StartOrderScreen
+import android.content.Context
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 
 enum class CupcakeScreen(val title: String) {
     Start("Computer Store"),
@@ -180,14 +183,24 @@ fun CupcakeApp(
             }
 
             composable(CupcakeScreen.Summary.name) {
+
+                val context = LocalContext.current
+
                 OrderSummaryScreen(
                     orderUiState = uiState,
+
                     onCancelButtonClicked = {
                         cancelOrderAndNavigateToStart(viewModel, navController)
                     },
-                    onSendButtonClicked = { _, _ ->
-                        // Order summary is ready to be shared.
+
+                    onSendButtonClicked = { subject, summary ->
+                        shareOrder(
+                            context = context,
+                            subject = subject,
+                            summary = summary
+                        )
                     },
+
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -204,5 +217,25 @@ private fun cancelOrderAndNavigateToStart(
     navController.popBackStack(
         CupcakeScreen.Start.name,
         inclusive = false
+    )
+}
+private fun shareOrder(
+    context: Context,
+    subject: String,
+    summary: String
+) {
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+
+        putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, summary)
+    }
+
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            "Share Computer Store Order"
+        )
     )
 }
