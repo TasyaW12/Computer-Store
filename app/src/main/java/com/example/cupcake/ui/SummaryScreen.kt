@@ -23,6 +23,8 @@ import com.example.cupcake.data.OrderUiState
 import com.example.cupcake.ui.theme.CupcakeTheme
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun OrderSummaryScreen(
@@ -37,8 +39,9 @@ fun OrderSummaryScreen(
     )
 
     val items = listOf(
+        Pair("Device Type", orderUiState.deviceType),
         Pair("Processor", orderUiState.processor),
-        Pair("Memory", orderUiState.memory),
+        Pair("RAM", orderUiState.memory),
         Pair("Storage", orderUiState.storage),
         Pair("Monitor", orderUiState.monitor),
         Pair("Graphics Card", orderUiState.graphicsCard)
@@ -53,20 +56,24 @@ fun OrderSummaryScreen(
         appendLine()
 
         items.forEach { item ->
-            appendLine("${item.first}: ${item.second.ifEmpty { "Belum dipilih" }}")
+            appendLine(
+                "${item.first}: ${item.second.ifEmpty { "Belum dipilih" }}"
+            )
         }
 
         appendLine()
         appendLine("Total Harga: $totalPrice")
     }
-
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = modifier.fillMaxHeight()
     ) {
 
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -100,6 +107,7 @@ fun OrderSummaryScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 Text(
                     text = "TOTAL HARGA",
                     fontWeight = FontWeight.Bold
@@ -113,7 +121,9 @@ fun OrderSummaryScreen(
         }
 
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
@@ -136,22 +146,26 @@ fun OrderSummaryScreen(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun OrderSummaryPreview() {
     CupcakeTheme {
         OrderSummaryScreen(
             orderUiState = OrderUiState(
+                deviceType = "Computer",
                 processor = "Intel Core i5",
                 memory = "16 GB",
                 storage = "SSD 512 GB",
                 monitor = "24 Inch",
                 graphicsCard = "RTX 4060",
+
                 processorPrice = 3000000,
                 memoryPrice = 650000,
                 storagePrice = 750000,
                 monitorPrice = 1800000,
                 graphicsCardPrice = 5000000,
+
                 totalPrice = 11200000
             ),
             onSendButtonClicked = { _, _ -> },

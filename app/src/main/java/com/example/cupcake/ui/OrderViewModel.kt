@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
+
+
 package com.example.cupcake.ui
 
 import androidx.lifecycle.ViewModel
-import com.example.cupcake.data.OrderUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.example.cupcake.data.OrderUiState
 
 class OrderViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(OrderUiState())
-
     val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
 
     private fun updateTotalPrice(state: OrderUiState): OrderUiState {
@@ -37,6 +38,12 @@ class OrderViewModel : ViewModel() {
                     state.monitorPrice +
                     state.graphicsCardPrice
         )
+    }
+
+    fun setDeviceType(device: String) {
+        _uiState.update { currentState ->
+            currentState.copy(deviceType = device)
+        }
     }
 
     fun setProcessor(name: String, price: Int) {
@@ -71,7 +78,6 @@ class OrderViewModel : ViewModel() {
             )
         }
     }
-
     fun setMonitor(name: String, price: Int) {
         _uiState.update { currentState ->
             updateTotalPrice(
@@ -94,7 +100,9 @@ class OrderViewModel : ViewModel() {
         }
     }
 
+
     fun resetOrder() {
         _uiState.value = OrderUiState()
     }
+
 }
